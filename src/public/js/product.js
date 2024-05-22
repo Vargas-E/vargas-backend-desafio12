@@ -25,23 +25,30 @@ increaseButton.addEventListener("click", () => {
 });
 
 function addProductToCart(prodId, quantity) {
-    var url = `http://localhost:8080/api/cart/${user.cart}/product/${prodId}`;
-    fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({quantity: quantity}),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          // Add a snackbar of product added!
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+  var url = `http://localhost:8080/api/cart/${user.cart}/product/${prodId}`;
+  if (product && product.owner == user.email) {
+    Swal.fire({
+      title: "This product is owned by you.",
+      text: "You are not allowed to buy products you added yourself as a premium user.",
+      confirmButtonColor: "#1A3A3A",
+    });
+    return;
   }
-  
+  fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ quantity: quantity }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        // Add a snackbar of product added!
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+}

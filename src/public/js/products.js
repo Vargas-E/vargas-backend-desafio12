@@ -85,6 +85,10 @@ function addProductToCart(prodId, quantity) {
         // Add a snackbar of product added!
         throw new Error("Network response was not ok");
       }
+      Swal.fire({
+        text: `${product.title} added to cart!`,
+        confirmButtonColor: "#1A3A3A",
+      });
       return response.json();
     })
     .catch((error) => {
