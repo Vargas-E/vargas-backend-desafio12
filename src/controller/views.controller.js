@@ -305,16 +305,44 @@ class ViewsController {
   }
 
   async renderResetPassword(req, res) {
-    res.render("form_password_reset");
+    const { errorCode } = req.query;
+    let error;
+    if (errorCode) {
+      switch (errorCode) {
+        case "0":
+          error = "Reset code has expired";
+          break;
+        default:
+          error = "Unknown error";
+      }
+    }
+    res.render("form_password_reset", { error });
   }
 
   async renderChangePassword(req, res) {
-    res.render("submit_password_reset");
-}
+    const { errorCode } = req.query;
+    let error;
+    if (errorCode) {
+      switch (errorCode) {
+        case "0":
+          error = "User not found";
+          break;
+        case "1":
+          error = "Reset code is incorrect";
+          break;
+        case "2":
+          error = "New password can't be the same as the old one";
+          break;
+        default:
+          error = "Unknown error";
+      }
+    }
+    res.render("submit_password_reset", { error });
+  }
 
   async renderConfirmation(req, res) {
     res.render("confirmation_email_sent");
-}
+  }
 }
 
 module.exports = ViewsController;

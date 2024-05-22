@@ -137,7 +137,7 @@ class AuthController {
 
       user.resetToken = {
         token: token,
-        expiresAt: new Date(Date.now() + 3600000),
+        expiresAt: new Date(Date.now() + 36),
       };
       await user.save();
       await emailManager.enviarCorreoRestablecimiento(
@@ -158,32 +158,23 @@ class AuthController {
     try {
       const user = await UserModel.findOne({ email });
       if (!user) {
-        return res.redirect("/views/password");
-        // return res.render("submit_password_reset", { error: "Usuario no encontrado" });
+        return res.redirect("/views/password?errorCode=0");
       }
       const resetToken = user.resetToken;
       if (!resetToken || resetToken.token !== token) {
-        return res.redirect("/views/request_password_reset?error=0");
-        // return res.render("submit_password_reset", {
-        //   error: "El token de restablecimiento de contraseña es inválido",
-        // });
+        return res.redirect("/views/password?errorCode=1");
       }
 
       const now = new Date();
       if (now > resetToken.expiresAt) {
-        return res.redirect("/views/request_password_reset?error=1");
-
-        // return res.redirect("/views/submit_password_reset");
+        return res.redirect("/views/request_password_reset?errorCode=0");
       }
       if (isValidPassword(password, user)) {
-        return res.redirect("/views/request_password_reset?error=2");
-        // return res.render("submit_password_reset", {
-        //   error: "La nueva contraseña no puede ser igual a la anterior",
-        // });
+        return res.redirect("/views/password?errorCode=2");
       }
 
       user.password = createHash(password);
-      user.resetToken = undefined; // Marcar el token como utilizado
+      user.resetToken = undefined;
       await user.save();
 
       return res.redirect("/views/login");
